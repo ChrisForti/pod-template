@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Hero() {
   return (
     <section className="bg-gray-50 py-12">
@@ -16,12 +18,18 @@ export default function Hero() {
                 logos to premium gear.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition shadow-sm">
+                <Link
+                  to="/products/1"
+                  className="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition shadow-sm text-center"
+                >
                   Start Customizing
-                </button>
-                <button className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-primary-600 hover:text-primary-600 transition">
+                </Link>
+                <Link
+                  to="/#products"
+                  className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-primary-600 hover:text-primary-600 transition text-center"
+                >
                   View Catalog
-                </button>
+                </Link>
               </div>
             </div>
 

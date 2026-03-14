@@ -8,6 +8,7 @@ A modern, scalable e-commerce storefront built with React, TypeScript, and Tailw
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
 - **Vite** - Build tool & dev server
+- **React Router** - Client-side routing
 
 ## Project Structure
 
@@ -28,13 +29,24 @@ src/
 npm install
 ```
 
-2. Run development server:
+2. Configure environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Set at least:
+
+- `VITE_API_BASE_URL` (backend/proxy base URL)
+- `VITE_APP_ENV` (`development`, `staging`, or `production`)
+
+3. Run development server:
 
 ```bash
 npm run dev
 ```
 
-3. Build for production:
+4. Build for production:
 
 ```bash
 npm run build
@@ -42,9 +54,8 @@ npm run build
 
 ## Next Steps
 
-- Add routing (React Router)
-- Implement product detail pages
-- Add cart functionality
-- Connect to backend API
-- Add authentication
-- Integrate payment processing
+- Build catalog data service (mock + Printful-ready)
+- Wire product detail page to fetched product IDs
+- Implement cart state and checkout flow
+- Add backend proxy endpoints for Printful operations
+- Add order submission and webhook handling

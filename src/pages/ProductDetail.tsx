@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function ProductDetail() {
+  const { id } = useParams<{ id: string }>();
+  const productId = id ?? "1";
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState("Navy");
   const [boatName, setBoatName] = useState("");
@@ -66,7 +69,7 @@ export default function ProductDetail() {
                   Performance Apparel
                 </span>
                 <h1 className="text-2xl font-bold text-gray-900 mt-1">
-                  pod-template
+                  pod-template #{productId}
                 </h1>
               </div>
 
