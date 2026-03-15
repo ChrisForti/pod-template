@@ -1,10 +1,5 @@
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-}
+import { Link } from "react-router-dom";
+import type { Product } from "../types/models";
 
 const mockProducts: Product[] = [
   {
@@ -51,8 +46,9 @@ export default function FeaturedProducts() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockProducts.map((product) => (
-            <div
+            <Link
               key={product.id}
+              to={`/products/${product.id}`}
               className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group"
             >
               {/* Product Image */}
@@ -79,7 +75,7 @@ export default function FeaturedProducts() {
                   <p className="text-xs text-gray-500">Starting price</p>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
