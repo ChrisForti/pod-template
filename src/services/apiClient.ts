@@ -6,7 +6,7 @@ export interface ApiRequestOptions extends RequestInit {
 
 function buildUrl(path: string, query?: ApiRequestOptions["query"]): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = new URL(`${env.apiBaseUrl}${normalizedPath}`);
+  const url = new URL(normalizedPath, env.apiBaseUrl);
 
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
