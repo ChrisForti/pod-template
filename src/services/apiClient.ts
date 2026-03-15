@@ -25,12 +25,12 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const { query, headers, ...rest } = options;
 
+  const normalizedHeaders = new Headers(headers ?? {});
+  normalizedHeaders.set("Content-Type", "application/json");
+
   const response = await fetch(buildUrl(path, query), {
     ...rest,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
+    headers: normalizedHeaders,
   });
 
   if (!response.ok) {
