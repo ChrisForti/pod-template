@@ -12,6 +12,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
@@ -32,6 +33,10 @@ export default function ProductDetail() {
       return;
     }
 
+    setLoading(true);
+    setFetchError(null);
+    setNotFound(false);
+
     catalogService
       .getProductById(numericId)
       .then((result) => {
@@ -44,6 +49,11 @@ export default function ProductDetail() {
           setSelectedSize(firstInStock?.size ?? variants[0]?.size ?? "");
           setSelectedColor(firstInStock?.color ?? variants[0]?.color ?? "");
         }
+      })
+      .catch((err: unknown) => {
+        const msg =
+          err instanceof Error ? err.message : "Failed to load product";
+        setFetchError(msg);
       })
       .finally(() => setLoading(false));
   }, [id]);
@@ -99,6 +109,62 @@ export default function ProductDetail() {
           <Link to="/" className="text-primary-600 hover:underline text-sm">
             ← Back to Home
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-sm">
+          <p className="text-xl font-semibold text-gray-900 mb-2">
+            Something went wrong
+          </p>
+          <p className="text-sm text-gray-500 mb-6">{fetchError}</p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => {
+                setFetchError(null);
+                setLoading(true);
+                const numericId = Number(id);
+                catalogService
+                  .getProductById(numericId)
+                  .then((result) => {
+                    if (!result) {
+                      setNotFound(true);
+                    } else {
+                      setProduct(result);
+                      const variants = result.variants ?? [];
+                      const firstInStock = variants.find((v) => v.inStock);
+                      setSelectedSize(
+                        firstInStock?.size ?? variants[0]?.size ?? "",
+                      );
+                      setSelectedColor(
+                        firstInStock?.color ?? variants[0]?.color ?? "",
+                      );
+                    }
+                  })
+                  .catch((err: unknown) => {
+                    setFetchError(
+                      err instanceof Error
+                        ? err.message
+                        : "Failed to load product",
+                    );
+                  })
+                  .finally(() => setLoading(false));
+              }}
+              className="px-5 py-2 rounded-lg bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 transition"
+            >
+              Try again
+            </button>
+            <Link
+              to="/"
+              className="px-5 py-2 rounded-lg border border-gray-300 text-sm text-gray-600 hover:border-gray-400 transition"
+            >
+              ← Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -251,12 +317,15 @@ export default function ProductDetail() {
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
+                          disabled={!available}
+                          aria-disabled={!available}
+                          aria-pressed={selected}
                           className={`py-2 px-4 rounded-lg border-2 font-medium transition ${
                             selected
                               ? "border-primary-600 bg-primary-50 text-primary-700"
                               : available
                                 ? "border-gray-300 hover:border-gray-400"
-                                : "border-gray-200 text-gray-300 cursor-not-allowed"
+                                : "border-gray-200 text-gray-300 cursor-not-allowed opacity-50"
                           }`}
                         >
                           {size}
@@ -281,12 +350,15 @@ export default function ProductDetail() {
                         <button
                           key={color}
                           onClick={() => setSelectedColor(color)}
+                          disabled={!available}
+                          aria-disabled={!available}
+                          aria-pressed={selected}
                           className={`py-2 px-4 rounded-lg border-2 font-medium transition ${
                             selected
                               ? "border-primary-600 bg-primary-50 text-primary-700"
                               : available
                                 ? "border-gray-300 hover:border-gray-400"
-                                : "border-gray-200 text-gray-300 cursor-not-allowed"
+                                : "border-gray-200 text-gray-300 cursor-not-allowed opacity-50"
                           }`}
                         >
                           {color}
