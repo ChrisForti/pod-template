@@ -10,24 +10,24 @@ export default function Header() {
           </Link>
 
           <div className="hidden md:flex space-x-8">
-            <Link
-              to="/#products"
+            <a
+              href="/#products"
               className="text-gray-700 hover:text-primary-600 transition"
             >
               Products
-            </Link>
-            <Link
-              to="/#about"
+            </a>
+            <a
+              href="/#about"
               className="text-gray-700 hover:text-primary-600 transition"
             >
               About
-            </Link>
-            <Link
-              to="/#contact"
+            </a>
+            <a
+              href="/#contact"
               className="text-gray-700 hover:text-primary-600 transition"
             >
               Contact
-            </Link>
+            </a>
           </div>
 
           <div className="flex items-center space-x-4">
