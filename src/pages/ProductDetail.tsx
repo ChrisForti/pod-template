@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Product, ProductVariant } from "../types/models";
 import { catalogService } from "../services/mockCatalogService";
@@ -25,17 +25,20 @@ export default function ProductDetail() {
   const [dragActive, setDragActive] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  const loadProduct = useCallback(() => {
+    // Reset all derived state before every fetch so stale values never bleed
+    // through when navigating between products (including invalid → valid).
+    setProduct(null);
+    setNotFound(false);
+    setFetchError(null);
+    setLoading(true);
+
     const numericId = Number(id);
     if (!numericId) {
       setNotFound(true);
       setLoading(false);
       return;
     }
-
-    setLoading(true);
-    setFetchError(null);
-    setNotFound(false);
 
     catalogService
       .getProductById(numericId)
@@ -57,6 +60,18 @@ export default function ProductDetail() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    loadProduct();
+  }, [loadProduct]);
+
+  // Revoke the object URL whenever it changes or the component unmounts to
+  // prevent blob URL memory leaks.
+  useEffect(() => {
+    return () => {
+      if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
+    };
+  }, [logoPreviewUrl]);
 
   const variants = product?.variants ?? [];
 
@@ -124,36 +139,7 @@ export default function ProductDetail() {
           <p className="text-sm text-gray-500 mb-6">{fetchError}</p>
           <div className="flex gap-3 justify-center">
             <button
-              onClick={() => {
-                setFetchError(null);
-                setLoading(true);
-                const numericId = Number(id);
-                catalogService
-                  .getProductById(numericId)
-                  .then((result) => {
-                    if (!result) {
-                      setNotFound(true);
-                    } else {
-                      setProduct(result);
-                      const variants = result.variants ?? [];
-                      const firstInStock = variants.find((v) => v.inStock);
-                      setSelectedSize(
-                        firstInStock?.size ?? variants[0]?.size ?? "",
-                      );
-                      setSelectedColor(
-                        firstInStock?.color ?? variants[0]?.color ?? "",
-                      );
-                    }
-                  })
-                  .catch((err: unknown) => {
-                    setFetchError(
-                      err instanceof Error
-                        ? err.message
-                        : "Failed to load product",
-                    );
-                  })
-                  .finally(() => setLoading(false));
-              }}
+              onClick={loadProduct}
               className="px-5 py-2 rounded-lg bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 transition"
             >
               Try again
@@ -171,7 +157,11 @@ export default function ProductDetail() {
   }
 
   const displayPrice = selectedVariant?.price ?? product.price;
-  const inStock = selectedVariant?.inStock ?? true;
+  // When variants exist, a missing selectedVariant means the size/color
+  // combination is invalid — treat that as out-of-stock so the button stays
+  // disabled. Only fall back to true when the product has no variants at all.
+  const inStock =
+    variants.length > 0 ? (selectedVariant?.inStock ?? false) : true;
 
   const viewImages = {
     Front: product.images?.front ?? product.image,
@@ -182,9 +172,10 @@ export default function ProductDetail() {
   const handleLogoFile = (file: File) => {
     const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif"];
     if (!allowed.includes(file.type) || file.size > 10 * 1024 * 1024) return;
-    if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl);
     setLogoFile(file);
     setLogoPreviewUrl(URL.createObjectURL(file));
+    // Clear the input value so selecting the same file again triggers onChange.
+    if (logoInputRef.current) logoInputRef.current.value = "";
   };
 
   const handleAddToCart = () => {
@@ -370,75 +361,6 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* Add to Cart Card */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <button
-                onClick={handleAddToCart}
-                disabled={!inStock}
-                className={`w-full py-4 rounded-xl font-bold text-lg transition-all shadow-md mb-3 flex items-center justify-center gap-2 ${
-                  inStock
-                    ? "bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg active:scale-[0.98]"
-                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
-              >
-                {inStock ? (
-                  <>
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                      />
-                    </svg>
-                    Add to Cart &mdash; ${displayPrice.toFixed(2)}
-                  </>
-                ) : (
-                  "Out of Stock"
-                )}
-              </button>
-
-              <div className="pt-4 border-t border-gray-200 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span>Ships in 3-5 business days</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span>Free shipping on orders $75+</span>
-                </div>
-              </div>
-            </div>
-
             {/* Customizer Card */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -512,9 +434,12 @@ export default function ProductDetail() {
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            URL.revokeObjectURL(logoPreviewUrl);
+                            // Revocation is handled by the logoPreviewUrl effect;
+                            // just clear state here.
                             setLogoFile(null);
                             setLogoPreviewUrl(null);
+                            if (logoInputRef.current)
+                              logoInputRef.current.value = "";
                           }}
                           className="text-xs text-red-500 hover:underline mt-0.5"
                         >
@@ -558,6 +483,75 @@ export default function ProductDetail() {
                   <option>Tuna Design</option>
                   <option>Waves & Fish</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Add to Cart Card */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <button
+                onClick={handleAddToCart}
+                disabled={!inStock}
+                className={`w-full py-4 rounded-xl font-bold text-lg transition-all shadow-md mb-3 flex items-center justify-center gap-2 ${
+                  inStock
+                    ? "bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg active:scale-[0.98]"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                {inStock ? (
+                  <>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    Add to Cart &mdash; ${displayPrice.toFixed(2)}
+                  </>
+                ) : (
+                  "Out of Stock"
+                )}
+              </button>
+
+              <div className="pt-4 border-t border-gray-200 space-y-2">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Ships in 3-5 business days</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Free shipping on orders $75+</span>
+                </div>
               </div>
             </div>
           </div>

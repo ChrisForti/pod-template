@@ -74,17 +74,23 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 // ─── Provider ────────────────────────────────────────────────────────────────
 
-/** Builds a stable cart item id from product + variant + customization. */
+/**
+ * Builds a collision-safe, stable cart item id from product + variant + boatName.
+ *
+ * Uses JSON.stringify of a fixed-length tuple so that hyphens (or any other
+ * character) inside the boatName can never collide with the separator.
+ * templateId is intentionally excluded — it is a display preference, not a
+ * distinct SKU, so the same boat-name on the same product/variant merges.
+ * boatName is normalized (trimmed, lowercased) so "My Boat" and " my boat "
+ * resolve to the same cart entry.
+ */
 function buildCartItemId(
   productId: number,
   variantId?: number,
   customization?: Customization,
 ): string {
-  const base = `${productId}-${variantId ?? "none"}`;
-  const custom = customization?.boatName
-    ? `-${customization.boatName}-${customization.templateId}`
-    : "";
-  return `${base}${custom}`;
+  const boatName = customization?.boatName?.trim().toLowerCase() ?? "";
+  return JSON.stringify([productId, variantId ?? null, boatName]);
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {

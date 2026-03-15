@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Product } from "../types/models";
 import { catalogService } from "../services/mockCatalogService";
@@ -8,13 +8,19 @@ export default function FeaturedProducts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadProducts = useCallback(() => {
+    setLoading(true);
+    setError(null);
     catalogService
       .getProducts()
       .then(setProducts)
       .catch(() => setError("Failed to load products. Please try again."))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   return (
     <section id="products" className="py-16 bg-gray-50">
@@ -45,7 +51,7 @@ export default function FeaturedProducts() {
           <div className="text-center py-12">
             <p className="text-red-600 font-medium">{error}</p>
             <button
-              onClick={() => window.location.reload()}
+              onClick={loadProducts}
               className="mt-4 px-5 py-2 rounded-lg border-2 border-gray-300 text-gray-700 hover:border-primary-600 hover:text-primary-600 transition text-sm font-medium"
             >
               Retry
