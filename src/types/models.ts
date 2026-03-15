@@ -15,6 +15,7 @@ export interface Product {
   category: string;
   description?: string;
   image: string;
+  images?: { front?: string; back?: string; detail?: string };
   price: number;
   variants?: ProductVariant[];
 }

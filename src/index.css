@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+
+  --color-cta-500: #f97316;
+  --color-cta-600: #ea580c;
+  --color-cta-700: #c2410c;
+}
+
 body {
   margin: 0;
   font-family:

@@ -1,42 +1,21 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Product } from "../types/models";
-
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    name: "Classic T-Shirt",
-    price: 29.99,
-    image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
-    category: "Apparel",
-  },
-  {
-    id: 2,
-    name: "Hoodie",
-    price: 49.99,
-    image:
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
-    category: "Apparel",
-  },
-  {
-    id: 3,
-    name: "Tote Bag",
-    price: 19.99,
-    image:
-      "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop",
-    category: "Accessories",
-  },
-  {
-    id: 4,
-    name: "Mug",
-    price: 14.99,
-    image:
-      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&h=400&fit=crop",
-    category: "Home",
-  },
-];
+import { catalogService } from "../services/mockCatalogService";
 
 export default function FeaturedProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    catalogService
+      .getProducts()
+      .then(setProducts)
+      .catch(() => setError("Failed to load products. Please try again."))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section id="products" className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,40 +23,69 @@ export default function FeaturedProducts() {
           Featured Products
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {mockProducts.map((product) => (
-            <Link
-              key={product.id}
-              to={`/products/${product.id}`}
-              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group"
-            >
-              {/* Product Image */}
-              <div className="aspect-square bg-gray-100 overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                />
-              </div>
-
-              {/* Product Info */}
-              <div className="p-4">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                  {product.category}
-                </p>
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  {product.name}
-                </h3>
-                <div className="flex items-baseline gap-2">
-                  <p className="text-lg font-bold text-primary-600">
-                    ${product.price}
-                  </p>
-                  <p className="text-xs text-gray-500">Starting price</p>
+        {loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((n) => (
+              <div
+                key={n}
+                className="bg-white rounded-xl shadow-sm overflow-hidden animate-pulse"
+              >
+                <div className="aspect-square bg-gray-200" />
+                <div className="p-4 space-y-2">
+                  <div className="h-3 bg-gray-200 rounded w-1/3" />
+                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+                  <div className="h-4 bg-gray-200 rounded w-1/4" />
                 </div>
               </div>
-            </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-red-600 font-medium">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-5 py-2 rounded-lg border-2 border-gray-300 text-gray-700 hover:border-primary-600 hover:text-primary-600 transition text-sm font-medium"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <Link
+                key={product.id}
+                to={`/products/${product.id}`}
+                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden group"
+              >
+                <div className="aspect-square bg-gray-100 overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                  />
+                </div>
+                <div className="p-4">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                    {product.category}
+                  </p>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    {product.name}
+                  </h3>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-lg font-bold text-primary-600">
+                      ${product.price.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-gray-500">Starting price</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

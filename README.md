@@ -1,4 +1,4 @@
-# Rybo POD - Print on Demand Merch Store
+# POD Template - Print on Demand Merch Store
 
 A modern, scalable e-commerce storefront built with React, TypeScript, and Tailwind CSS.
 

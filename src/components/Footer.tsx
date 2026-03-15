@@ -6,7 +6,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
               <div className="text-2xl font-bold mb-4">
-                Rybo<span className="text-primary-500">POD</span>
+                POD<span className="text-primary-500">Template</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Your destination for custom print-on-demand merchandise. Quality
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2026 RyboPOD. All rights reserved.</p>
+            <p>&copy; 2026 POD Template. All rights reserved.</p>
           </div>
         </div>
       </div>
