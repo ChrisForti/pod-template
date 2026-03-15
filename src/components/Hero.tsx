@@ -24,12 +24,12 @@ export default function Hero() {
                 >
                   Start Customizing
                 </Link>
-                <Link
-                  to="/#products"
+                <a
+                  href="#products"
                   className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-primary-600 hover:text-primary-600 transition text-center"
                 >
                   View Catalog
-                </Link>
+                </a>
               </div>
             </div>
 
