@@ -190,9 +190,7 @@ export default function ProductDetail() {
       image: product.image,
       unitPrice: displayPrice,
       quantity: 1,
-      customization: boatName
-        ? { boatName, templateId }
-        : undefined,
+      customization: boatName ? { boatName, templateId } : undefined,
     });
     navigate("/cart");
   };

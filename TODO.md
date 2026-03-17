@@ -66,8 +66,12 @@
 
 ## Phase 5 - Backend + Integrations
 
-> Full plan documented in [CUSTOMIZER.md](./CUSTOMIZER.md)
+> Architecture decision: backend lives in `api/` within this repo (own package.json + tsconfig,
+> no frontend dep bleed) so it can be extracted to a standalone repo at any time without
+> restructuring. Vite dev proxy (`/api → localhost:3001`) keeps CORS clean in development.
 
+- [ ] Scaffold `api/` as self-contained Express/Fastify app
+  - DoD: `api/package.json`, `api/tsconfig.json`, `api/src/index.ts` exist; `npm start` in `api/` runs the server independently; `vite.config.ts` proxies `/api` to `http://localhost:3001`
 - [ ] Build backend proxy for all Printful API calls
   - DoD: API key is server-only; frontend never sees it
 - [ ] Artwork hosting (S3 / Cloudflare R2) for customer logo uploads
