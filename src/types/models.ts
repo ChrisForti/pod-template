@@ -21,9 +21,8 @@ export interface Product {
 }
 
 export interface Customization {
-  boatName: string;
+  boatName?: string;
   templateId: string;
-  logoFile?: File;
   logoUrl?: string;
 }
 

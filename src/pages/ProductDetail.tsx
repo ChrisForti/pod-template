@@ -17,6 +17,7 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [boatName, setBoatName] = useState("");
+  const [templateId, setTemplateId] = useState("classic-text");
   const [activeView, setActiveView] = useState<"Front" | "Back" | "Detail">(
     "Front",
   );
@@ -32,6 +33,13 @@ export default function ProductDetail() {
     setNotFound(false);
     setFetchError(null);
     setLoading(true);
+
+    // Reset customization state so user-entered values from a previous product
+    // don't carry over when navigating to a different product on the same route.
+    setBoatName("");
+    setTemplateId("classic-text");
+    setLogoFile(null);
+    setLogoPreviewUrl(null);
 
     const numericId = Number(id);
     if (!numericId) {
@@ -189,9 +197,14 @@ export default function ProductDetail() {
       image: product.image,
       unitPrice: displayPrice,
       quantity: 1,
-      customization: boatName
-        ? { boatName, templateId: "classic-text" }
-        : undefined,
+      customization:
+        boatName || logoPreviewUrl || templateId !== "classic-text"
+          ? {
+              boatName: boatName || undefined,
+              templateId,
+              logoUrl: logoPreviewUrl ?? undefined,
+            }
+          : undefined,
     });
     navigate("/cart");
   };
@@ -223,12 +236,34 @@ export default function ProductDetail() {
           {/* Left: Product Preview Card */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden sticky top-8">
-              <div className="aspect-square bg-gray-100 overflow-hidden">
+              {/* relative wrapper so the customization overlay can be absolutely positioned */}
+              <div className="aspect-square bg-gray-100 overflow-hidden relative">
                 <img
                   src={viewImages[activeView]}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
+                {(boatName || logoPreviewUrl) && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    {/* Logo — top-left corner */}
+                    {logoPreviewUrl && (
+                      <img
+                        src={logoPreviewUrl}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute top-4 left-4 w-20 h-20 object-contain drop-shadow-lg"
+                      />
+                    )}
+                    {/* Boat name — bottom strip */}
+                    {boatName && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 py-3 px-4 text-center">
+                        <span className="text-white font-bold text-xl tracking-widest drop-shadow">
+                          {boatName}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="p-4 border-t border-gray-200">
                 <div className="flex gap-3">
@@ -427,7 +462,7 @@ export default function ProductDetail() {
                         className="w-12 h-12 object-contain rounded"
                       />
                       <div className="text-left">
-                        <p className="text-sm font-medium text-gray-800 truncate max-w-[160px]">
+                        <p className="text-sm font-medium text-gray-800 truncate max-w-40">
                           {logoFile.name}
                         </p>
                         <button
@@ -477,11 +512,15 @@ export default function ProductDetail() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   Design Template
                 </label>
-                <select className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-primary-500 transition">
-                  <option>Classic Text Only</option>
-                  <option>Marlin Design</option>
-                  <option>Tuna Design</option>
-                  <option>Waves & Fish</option>
+                <select
+                  value={templateId}
+                  onChange={(e) => setTemplateId(e.target.value)}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-primary-500 transition"
+                >
+                  <option value="classic-text">Classic Text Only</option>
+                  <option value="marlin">Marlin Design</option>
+                  <option value="tuna">Tuna Design</option>
+                  <option value="waves-fish">Waves &amp; Fish</option>
                 </select>
               </div>
             </div>
