@@ -30,18 +30,20 @@
 - [x] Register all used Tailwind v4 primary color shades in @theme
   - DoD: primary-200/300/400 defined; ring, disabled-button, and hover-border utilities all render
 
-## Phase 3 - Customization Workflow (front-end only) ✅ (partial)
+## Phase 3 - Customization Workflow (front-end only) ✅
 
-- [ ] Wire `templateId` state to Design Template select
-  - DoD: All three customization fields (boatName, templateId, logoFile) are live in component state
+- [x] Wire `templateId` state to Design Template select
+  - DoD: All three customization fields (boatName, templateId, logoFile) are live in component state; templateId passed to cart payload
 - [x] Client-side logo upload with file validation and local preview
   - DoD: File type/size validated, preview renders in upload zone, Remove clears it
 - [x] Logo blob URL cleanup on unmount / file change (no memory leaks)
   - DoD: useEffect teardown revokes objectURL; file input value cleared after handling
 - [x] Front/Back/Detail thumbnail view switching with active state
   - DoD: Thumbnails show real product images, clicking switches main image with active border ring
-- [ ] Boat name + logo CSS overlay on product preview image
+- [x] Boat name + logo CSS overlay on product preview image
   - DoD: Preview panel reflects boat name text and logo as the user types/uploads
+- [ ] Print-area bounding box per product (Level 1 mockup improvement)
+  - DoD: Each product defines printArea { top, left, width, height } percentages; overlay renders inside the correct zone per garment type
 - [ ] ~~Printful mockup generation~~ — deferred to Phase 5 (requires backend)
   - See [CUSTOMIZER.md](./CUSTOMIZER.md) for full implementation plan
 
@@ -64,8 +66,12 @@
 
 ## Phase 5 - Backend + Integrations
 
-> Full plan documented in [CUSTOMIZER.md](./CUSTOMIZER.md)
+> Architecture decision: backend lives in `api/` within this repo (own package.json + tsconfig,
+> no frontend dep bleed) so it can be extracted to a standalone repo at any time without
+> restructuring. Vite dev proxy (`/api → localhost:3001`) keeps CORS clean in development.
 
+- [ ] Scaffold `api/` as self-contained Express/Fastify app
+  - DoD: `api/package.json`, `api/tsconfig.json`, `api/src/index.ts` exist; `npm start` in `api/` runs the server independently; `vite.config.ts` proxies `/api` to `http://localhost:3001`
 - [ ] Build backend proxy for all Printful API calls
   - DoD: API key is server-only; frontend never sees it
 - [ ] Artwork hosting (S3 / Cloudflare R2) for customer logo uploads

@@ -76,7 +76,7 @@ export default function CartPage() {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                  className="w-20 h-20 object-cover rounded-lg shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900 truncate">
@@ -120,7 +120,7 @@ export default function CartPage() {
                     </button>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-right shrink-0">
                   <p className="font-bold text-gray-900">
                     ${(item.unitPrice * item.quantity).toFixed(2)}
                   </p>
