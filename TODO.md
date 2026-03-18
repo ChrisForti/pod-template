@@ -47,7 +47,7 @@
 - [ ] ~~Printful mockup generation~~ — deferred to Phase 5 (requires backend)
   - See [CUSTOMIZER.md](./CUSTOMIZER.md) for full implementation plan
 
-## Phase 4 - Cart + Checkout ✅ (partial)
+## Phase 4 - Cart + Checkout ✅
 
 - [x] Build cart store (Context or lightweight state lib)
   - DoD: Add/remove/update quantity and total calculations work across routes
@@ -59,9 +59,9 @@
   - DoD: When variants exist, unmatched size+color treats inStock as false
 - [x] Create cart page UI
   - DoD: Editable line items, totals, free shipping threshold, CTA to checkout
-- [ ] Create checkout form (shipping + contact)
+- [x] Create checkout form (shipping + contact)
   - DoD: Form validation and submission-ready payload generation
-- [ ] Implement order submission flow
+- [x] Implement order submission flow
   - DoD: Successful checkout creates order request and returns success page state
 
 ## Phase 5 - Backend + Integrations
