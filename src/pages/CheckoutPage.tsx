@@ -304,6 +304,24 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {/* ── Payment ───────────────────────────────────────────── */}
+              {/* WIRE-UP: replace this stub with Stripe Elements:
+                    import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+                    On submit: const { paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                      payment_method: { card: elements.getElement(CardElement) }
+                    });
+                    Add VITE_STRIPE_PUBLIC_KEY to .env and load the Stripe provider in main.tsx. */}
+              <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Payment</h2>
+                <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
+                  <svg className="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                  <p className="text-sm text-gray-400 font-medium">Payment fields will appear here</p>
+                  <p className="text-xs text-gray-400 mt-1">Stripe Elements integration — see WIRE-UP comment above</p>
+                </div>
+              </div>
+
               {submitError && (
                 <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4 text-sm text-red-700">
                   {submitError}

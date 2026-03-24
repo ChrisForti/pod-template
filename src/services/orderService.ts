@@ -12,6 +12,7 @@ export interface IOrderService {
 
 class ApiOrderService implements IOrderService {
   async submitOrder(draft: OrderDraft): Promise<OrderResult> {
+    // WIRE-UP: POST ${VITE_API_BASE_URL}/api/orders — backend creates Printful order, returns { orderId, status }
     return apiRequest<OrderResult>("/api/orders", {
       method: "POST",
       body: JSON.stringify(draft),

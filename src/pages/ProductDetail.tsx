@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Product, ProductVariant } from "../types/models";
-import { catalogService } from "../services/mockCatalogService";
+import { catalogService } from "../services/apiCatalogService";
 import { useCart } from "../context/CartContext";
 
 export default function ProductDetail() {

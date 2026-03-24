@@ -2,10 +2,31 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
 } from "react";
 import type { CartItem, Customization } from "../types/models";
+
+const CART_STORAGE_KEY = "pod_cart_v1";
+
+function loadCartFromStorage(): CartState {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as CartState;
+  } catch {
+    // Corrupted storage — start fresh
+  }
+  return { items: [] };
+}
+
+function saveCartToStorage(state: CartState): void {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Storage quota exceeded or blocked — silently ignore
+  }
+}
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
@@ -98,7 +119,11 @@ function buildCartItemId(
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, initialState);
+  const [state, dispatch] = useReducer(cartReducer, undefined, loadCartFromStorage);
+
+  useEffect(() => {
+    saveCartToStorage(state);
+  }, [state]);
 
   const addItem = useCallback((item: Omit<CartItem, "id">) => {
     const id = buildCartItemId(

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Product } from "../types/models";
-import { catalogService } from "../services/mockCatalogService";
+import { catalogService } from "../services/apiCatalogService";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
