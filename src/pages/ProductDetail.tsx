@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Product, ProductVariant } from "../types/models";
 import { catalogService } from "../services/mockCatalogService";
 import { useCart } from "../context/CartContext";
+import { uploadLogo } from "../services/uploadService";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +24,10 @@ export default function ProductDetail() {
   );
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const [logoUploadedUrl, setLogoUploadedUrl] = useState<string | null>(null);
+  const [logoUploadState, setLogoUploadState] = useState<
+    "idle" | "uploading" | "error"
+  >("idle");
   const [dragActive, setDragActive] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,6 +45,8 @@ export default function ProductDetail() {
     setTemplateId("classic-text");
     setLogoFile(null);
     setLogoPreviewUrl(null);
+    setLogoUploadedUrl(null);
+    setLogoUploadState("idle");
 
     const numericId = Number(id);
     if (!numericId) {
@@ -182,8 +189,19 @@ export default function ProductDetail() {
     if (!allowed.includes(file.type) || file.size > 10 * 1024 * 1024) return;
     setLogoFile(file);
     setLogoPreviewUrl(URL.createObjectURL(file));
+    setLogoUploadedUrl(null);
+    setLogoUploadState("uploading");
     // Clear the input value so selecting the same file again triggers onChange.
     if (logoInputRef.current) logoInputRef.current.value = "";
+    // Upload to backend to get a persistent public URL for Printful.
+    uploadLogo(file)
+      .then((url) => {
+        setLogoUploadedUrl(url);
+        setLogoUploadState("idle");
+      })
+      .catch(() => {
+        setLogoUploadState("error");
+      });
   };
 
   const handleAddToCart = () => {
@@ -198,11 +216,11 @@ export default function ProductDetail() {
       unitPrice: displayPrice,
       quantity: 1,
       customization:
-        boatName || logoPreviewUrl || templateId !== "classic-text"
+        boatName || logoUploadedUrl || templateId !== "classic-text"
           ? {
               boatName: boatName || undefined,
               templateId,
-              logoUrl: logoPreviewUrl ?? undefined,
+              logoUrl: logoUploadedUrl ?? undefined,
             }
           : undefined,
     });
@@ -473,6 +491,8 @@ export default function ProductDetail() {
                             // just clear state here.
                             setLogoFile(null);
                             setLogoPreviewUrl(null);
+                            setLogoUploadedUrl(null);
+                            setLogoUploadState("idle");
                             if (logoInputRef.current)
                               logoInputRef.current.value = "";
                           }}
@@ -529,9 +549,9 @@ export default function ProductDetail() {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <button
                 onClick={handleAddToCart}
-                disabled={!inStock}
+                disabled={!inStock || logoUploadState === "uploading"}
                 className={`w-full py-4 rounded-xl font-bold text-lg transition-all shadow-md mb-3 flex items-center justify-center gap-2 ${
-                  inStock
+                  inStock && logoUploadState !== "uploading"
                     ? "bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg active:scale-[0.98]"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                 }`}
@@ -551,7 +571,9 @@ export default function ProductDetail() {
                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                       />
                     </svg>
-                    Add to Cart &mdash; ${displayPrice.toFixed(2)}
+                    {logoUploadState === "uploading"
+                      ? "Uploading logo…"
+                      : `Add to Cart — $${displayPrice.toFixed(2)}`}
                   </>
                 ) : (
                   "Out of Stock"
