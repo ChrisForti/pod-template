@@ -119,7 +119,11 @@ function buildCartItemId(
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, undefined, loadCartFromStorage);
+  const [state, dispatch] = useReducer(
+    cartReducer,
+    undefined,
+    loadCartFromStorage,
+  );
 
   useEffect(() => {
     saveCartToStorage(state);

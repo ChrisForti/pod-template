@@ -4,16 +4,6 @@ function readEnv(name: keyof ImportMetaEnv): string | undefined {
   return import.meta.env[name];
 }
 
-function readRequiredEnv(name: keyof ImportMetaEnv): string {
-  const value = readEnv(name);
-
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-
-  return value;
-}
-
 function readOptionalEnv(name: keyof ImportMetaEnv, fallback = ""): string {
   return readEnv(name) ?? fallback;
 }
@@ -28,6 +18,8 @@ function normalizeEnvironment(value: string): AppEnvironment {
 
 export const env = {
   appEnv: normalizeEnvironment(readOptionalEnv("VITE_APP_ENV", "development")),
-  apiBaseUrl: readRequiredEnv("VITE_API_BASE_URL"),
+  // WIRE-UP: replace readOptionalEnv with a required check when connecting to a real backend:
+  //   apiBaseUrl: (() => { const v = import.meta.env.VITE_API_BASE_URL; if (!v) throw new Error("Missing VITE_API_BASE_URL"); return v; })()
+  apiBaseUrl: readOptionalEnv("VITE_API_BASE_URL", ""),
   printfulStoreId: readOptionalEnv("VITE_PRINTFUL_STORE_ID"),
 } as const;

@@ -312,13 +312,29 @@ export default function CheckoutPage() {
                     });
                     Add VITE_STRIPE_PUBLIC_KEY to .env and load the Stripe provider in main.tsx. */}
               <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">Payment</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-4">
+                  Payment
+                </h2>
                 <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
-                  <svg className="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  <svg
+                    className="w-8 h-8 text-gray-300 mx-auto mb-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    />
                   </svg>
-                  <p className="text-sm text-gray-400 font-medium">Payment fields will appear here</p>
-                  <p className="text-xs text-gray-400 mt-1">Stripe Elements integration — see WIRE-UP comment above</p>
+                  <p className="text-sm text-gray-400 font-medium">
+                    Payment fields will appear here
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Stripe Elements integration — see WIRE-UP comment above
+                  </p>
                 </div>
               </div>
 
@@ -376,7 +392,7 @@ export default function CheckoutPage() {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-12 h-12 rounded-lg object-cover flex-shrink-0 bg-gray-100"
+                      className="w-12 h-12 rounded-lg object-cover shrink-0 bg-gray-100"
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-800 truncate">
@@ -391,7 +407,7 @@ export default function CheckoutPage() {
                         Qty {item.quantity}
                       </p>
                     </div>
-                    <span className="text-sm font-semibold text-gray-800 flex-shrink-0">
+                    <span className="text-sm font-semibold text-gray-800 shrink-0">
                       ${(item.unitPrice * item.quantity).toFixed(2)}
                     </span>
                   </li>

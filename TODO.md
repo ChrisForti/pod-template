@@ -1,6 +1,12 @@
 # TODO
 
-## Current Status (Already Built)
+## Template Status
+
+This repo is the **mock-first template**. It deploys to GitHub Pages with mock data.
+Real API integration (Printful, Stripe, etc.) lives in the cloned store repo.
+Search `WIRE-UP` across `src/` for every integration point.
+
+## Already Built
 
 - [x] Landing page sections (header, hero, featured products, features, footer)
 - [x] Product detail layout skeleton (preview, info, customizer, details)
@@ -64,7 +70,10 @@
 - [x] Implement order submission flow
   - DoD: Successful checkout creates order request and returns success page state
 
-## Phase 5 - Backend + Integrations
+## Phase 5 - Backend + Integrations _(cloned store repo only)_
+
+> **Do not implement in this template.**
+> Clone the repo, then wire up the `WIRE-UP` stubs. See `src/services/` for all integration points.
 
 - [ ] Build backend proxy for all Printful API calls
   - DoD: API key is server-only; frontend never sees it
@@ -90,7 +99,7 @@
 - [ ] Final launch checklist
   - DoD: Env vars, legal pages, pricing checks, and monitoring all verified
 
-## Immediate Next Sprint (Recommended)
+## Template — Remaining Polish
 
 - [x] Routing setup + remove App toggle
 - [x] Product data service abstraction (mock + Printful-ready)
