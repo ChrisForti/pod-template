@@ -10,7 +10,7 @@ export default function Hero() {
             {/* Left: Content */}
             <div className="p-8 md:p-12">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                pod-template
+                4D Threads
               </h1>
               <p className="text-lg text-gray-600 mb-8">
                 High-performance apparel designed for sport fishing

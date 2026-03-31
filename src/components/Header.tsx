@@ -8,7 +8,7 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold text-gray-900">
-            POD<span className="text-primary-600">Template</span>
+            4D<span className="text-primary-600">Threads</span>
           </Link>
 
           <div className="hidden md:flex space-x-8">
